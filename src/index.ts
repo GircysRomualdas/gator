@@ -3,11 +3,12 @@ import {
   registerCommand,
   runCommand,
 } from "./commands/commands";
-import { handlerLogin } from "./commands/users";
+import { handlerLogin, handlerRegister } from "./commands/users";
 
-function main() {
+async function main() {
   const registry: CommandsRegistry = {};
   registerCommand(registry, "login", handlerLogin);
+  registerCommand(registry, "register", handlerRegister);
 
   try {
     const args = process.argv.slice(2);
@@ -15,11 +16,12 @@ function main() {
       throw new Error("No command provided");
     }
     const cmdName = args[0];
-    runCommand(registry, cmdName, ...args.slice(1));
+    await runCommand(registry, cmdName, ...args.slice(1));
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
+  process.exit(0);
 }
 
 main();
