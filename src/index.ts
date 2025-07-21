@@ -1,6 +1,5 @@
-import { readConfig, setUser } from "./config";
 import {
-  type CommandsRegistry,
+  CommandsRegistry,
   registerCommand,
   runCommand,
 } from "./commands/commands";
