@@ -15,7 +15,11 @@ import {
   handlerAddFeed,
   handlerListFeeds,
 } from "./commands/aggregate";
-import { handlerFollow, handlerFollowing } from "./commands/follow";
+import {
+  handlerFollow,
+  handlerFollowing,
+  handlerUnfollow,
+} from "./commands/follow";
 
 async function main() {
   const registry: CommandsRegistry = {};
@@ -28,6 +32,7 @@ async function main() {
   registerCommand(registry, "feeds", handlerListFeeds);
   registerCommand(registry, "follow", middlewareLoggedIn(handlerFollow));
   registerCommand(registry, "following", middlewareLoggedIn(handlerFollowing));
+  registerCommand(registry, "unfollow", middlewareLoggedIn(handlerUnfollow));
 
   try {
     const args = process.argv.slice(2);
