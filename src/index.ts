@@ -9,7 +9,11 @@ import {
   handlerReset,
   handlerListUsers,
 } from "./commands/users";
-import { handlerAggregate, handlerAddFeed } from "./commands/aggregate";
+import {
+  handlerAggregate,
+  handlerAddFeed,
+  handlerListFeeds,
+} from "./commands/aggregate";
 
 async function main() {
   const registry: CommandsRegistry = {};
@@ -19,6 +23,7 @@ async function main() {
   registerCommand(registry, "users", handlerListUsers);
   registerCommand(registry, "agg", handlerAggregate);
   registerCommand(registry, "addfeed", handlerAddFeed);
+  registerCommand(registry, "feeds", handlerListFeeds);
 
   try {
     const args = process.argv.slice(2);
