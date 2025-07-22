@@ -3,6 +3,7 @@ import { readConfig } from "../config";
 import { getUserByName, getUserById } from "../lib/db/queries/users";
 import { createFeed, getFeeds } from "../lib/db/queries/feeds";
 import { Feed, User } from "src/lib/db/schema";
+import { createFeedFollow } from "../lib/db/queries/feedFollows";
 
 export async function handlerAggregate(cmdName: string, ...args: string[]) {
   const feedURL = "https://www.wagslane.dev/index.xml";
@@ -10,7 +11,11 @@ export async function handlerAggregate(cmdName: string, ...args: string[]) {
   console.log(JSON.stringify(rssFeed, null, 2));
 }
 
-export async function handlerAddFeed(cmdName: string, ...args: string[]) {
+export async function handlerAddFeed(
+  cmdName: string,
+  user: User,
+  ...args: string[]
+) {
   if (args.length < 2) {
     throw new Error(`usage: ${cmdName} <name> <url>`);
   }
@@ -18,16 +23,20 @@ export async function handlerAddFeed(cmdName: string, ...args: string[]) {
   const feedName: string = args[0];
   const url: string = args[1];
   const config = readConfig();
-  const user = await getUserByName(config.currentUserName);
-  if (!user) {
-    throw new Error(`User ${config.currentUserName} does not exist`);
-  }
   const feed = await createFeed(feedName, url, user.id);
   if (!feed) {
     throw new Error(`Failed to create feed ${feedName}`);
   }
   console.log(`Feed ${feedName} created successfully`);
   printFeed(feed, user);
+
+  const feedFollow = await createFeedFollow(user.id, feed.id);
+  if (!feedFollow) {
+    throw new Error(`failed to follow feed: ${feed.name}`);
+  }
+  console.log(
+    `Feed ${feedFollow.feedName} followed by user ${feedFollow.userName}`,
+  );
 }
 
 export async function handlerListFeeds(cmdName: string, ...args: string[]) {

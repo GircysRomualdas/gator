@@ -15,6 +15,13 @@
       "when": 1753218456166,
       "tag": "0001_awesome_dust",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1753222973286,
+      "tag": "0002_known_logan",
+      "breakpoints": true
     }
   ]
 }
