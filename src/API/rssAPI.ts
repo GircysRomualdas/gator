@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import { getNextFeedToFetch, markFeedFetched } from "../lib/db/queries/feeds";
+import { createPost } from "../lib/db/queries/posts";
 
 type RSSFeed = {
   channel: {
@@ -70,8 +71,30 @@ export async function scrapeFeeds() {
   }
   await markFeedFetched(feed.id);
   const fetchedFeed = await fetchFeed(feed.url);
-  console.log("Titles:");
+  console.log("Fetched feed:");
   for (const item of fetchedFeed.channel.item) {
-    console.log(item.title);
+    try {
+      const post = await createPost(
+        item.title,
+        item.link,
+        item.description,
+        parsePublishedDate(item.pubDate),
+        feed.id,
+      );
+      if (post) {
+        console.log(`Created post: ${post.title}`);
+      }
+    } catch (error) {
+      console.log(`Post already exists or failed to create: ${item.title}`);
+    }
   }
+}
+
+function parsePublishedDate(dateString: string): Date {
+  const parsed = new Date(dateString);
+  if (isNaN(parsed.getTime())) {
+    console.warn(`Invalid date format: ${dateString}, using current time`);
+    return new Date();
+  }
+  return parsed;
 }
